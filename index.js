@@ -25,8 +25,8 @@ app.post('/images', function (req, res) {
   })
 })
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+app.listen(80, function () {
+  console.log('Example app listening on port 80!')
 })
 
 // var server = http.createServer(function(request, response){
