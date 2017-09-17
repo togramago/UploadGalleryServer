@@ -1,61 +1,46 @@
 const express = require('express')
+const cloudinary = require('cloudinary');
+const multer = require('multer')
 const app = express()
 
 app.set('port', (process.env.PORT || 3000));
 
-app.get('/images', function (req, res) {
-  console.log('User ID: ' + req.query.user_id)
+cloudinary.config({ 
+  cloud_name: 'hlktbf96w', 
+  api_key: '263625593474264', 
+  api_secret: 'J-J3ZF4RWuW1vCi0dylY5ynH84A' 
+});
 
-  res.json({
-    'images': [
-      {
-        'url': 'https://cmeimg-a.akamaihd.net/640/clsd/getty/c64f76dc20c246ca88ee180fe4b4b781',
-        'created_at': '2017-09-17T19:33:14Z'
-      },
-      {
-        'url': 'https://www.petfinder.com/wp-content/uploads/2012/11/91615172-find-a-lump-on-cats-skin-632x475.jpg',
-        'created_at': '2017-09-16T07:32:17Z'
-      }        
-    ]
-  })
+var upload = multer({ dest: 'uploads/' })
+
+app.get('/images', function (req, res) {
+  cloudinary.v2.api.resources_by_tag('user_' + req.query.user_id, function(error, result) {
+    var images = result["resources"] == undefined ? [] : result["resources"].map(function(resource) {
+      return {
+        'url': resource['url'],
+        'created_at': resource['created_at']
+      }
+    });
+
+    res.json({'images': images})
+  });
 })
 
-app.post('/images', function (req, res) {
-  res.json({
-    'url': 'https://www.petfinder.com/wp-content/uploads/2012/11/91615172-find-a-lump-on-cats-skin-632x475.jpg',
-    'created_at': '2017-09-16T07:32:17Z'
-  })
+app.post('/images', upload.single('image'), function (req, res) {
+  cloudinary.v2.uploader.upload(
+    req.file.path,
+    {
+      tags: ['user_' + req.body.user_id]
+    },
+    function(error, result) {
+      res.json({
+        'url': result.url,
+        'created_at': result.created_at
+      })
+    }
+  );
 })
 
 app.listen(app.get('port'), function () {
-  console.log('Example app listening on port 80!')
+  console.log('Example app listening on port ' + app.get('port'))
 })
-
-// var server = http.createServer(function(request, response){
-// 	var url_parts = url.parse(request.url).path.substring(1).split("/");
-
-// 	var width = parseInt(url_parts[0]);
-// 	var height = parseInt(url_parts[1]);
-//     var max = Math.max(width, height);
-
-// 	if(!isNaN(width) && !isNaN(height))
-// 	{
-//         response.writeHead(200, {'content-type': 'image/png'});
-//         gm('nodejs.png').
-//             resize(max, max).
-//             crop(width, height, 0, 0).
-//             stream(function(err, stdout, stderr){
-//                 if(err) {
-//                     console.log(err)
-//                 }
-//                 else {
-//                     stdout.pipe(response);
-//                 }
-//             });
-// 	}
-//     else {
-//         response.writeHead(400, {'content-type' : 'text/plain'});
-//         response.end();
-//     }
-// })
-// .listen(1337, '127.0.0.1');
