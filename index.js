@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.set('port', (process.env.PORT || 3000));
+
 app.get('/images', function (req, res) {
   console.log('User ID: ' + req.query.user_id)
 
@@ -25,7 +27,7 @@ app.post('/images', function (req, res) {
   })
 })
 
-app.listen(80, function () {
+app.listen(app.get('port'), function () {
   console.log('Example app listening on port 80!')
 })
 
