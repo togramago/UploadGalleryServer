@@ -26,11 +26,11 @@ app.get('/images', function (req, res) {
   });
 })
 
-app.post('/images', upload.single('image'), function (req, res) {
+app.post('/images/:user_id', upload.single('image'), function (req, res) {
   cloudinary.v2.uploader.upload(
     req.file.path,
     {
-      tags: ['user_' + req.body.user_id]
+      tags: ['user_' + req.params.user_id]
     },
     function(error, result) {
       res.json({
@@ -40,6 +40,8 @@ app.post('/images', upload.single('image'), function (req, res) {
     }
   );
 })
+
+
 
 app.listen(app.get('port'), function () {
   console.log('Example app listening on port ' + app.get('port'))
