@@ -2,6 +2,8 @@
 
 
 *url*: https://polar-bastion-91741.herokuapp.com/images  
+
+
 `GET /images?user_id="user_id"`  
 returns all uploaded images for the user  
 response: `[{"url": String, "created_at": timestamp}]`  
